@@ -74,4 +74,10 @@ export interface MemeConfig {
     channel: string;
 }
 
+export interface Watcher {
+    guild: string;
+    user: string;
+    link: string;
+}
+
 export type Range = {start: number, end: number};

@@ -31,4 +31,16 @@ const isPruneOption = (maybePruneOption: any): maybePruneOption is PruneOption =
 
 const getGuild = (message: Message): string => message.guild?.id ?? "";
 
-export {batchImport, getSongRange, isSource, isMuteOption, isMemeOption, isPruneOption, isMuteConfig, getGuild};
+const getUser = (message: Message): string => message.author.id ?? "";
+
+export {
+    batchImport,
+    getSongRange,
+    isSource,
+    isMuteOption,
+    isMemeOption,
+    isPruneOption,
+    isMuteConfig,
+    getGuild,
+    getUser
+};

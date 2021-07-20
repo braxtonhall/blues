@@ -1,12 +1,13 @@
 import Datastore from "nedb";
 import {DatabaseAdapter} from "../DatabaseAdapter";
-import {Playlist, Range, Setting, Song, Source} from "../../../Types";
+import {Playlist, Range, Setting, Song, Source, Watcher} from "../../../Types";
 import Log from "../../../util/Log";
 import {ConfigKey, getConfig} from "../../../util/Config";
 
 enum Entity {
     SONGS = "songs",
     PLAYLISTS = "playlists",
+    WATCHERS = "watchers",
 }
 
 type Collection = Entity | Setting
@@ -31,6 +32,10 @@ interface DBSong extends Song {
 interface DBPlaylist extends Playlist {
     _id?: string;
     guild: string;
+}
+
+interface DBWatcher extends Watcher {
+    _id?: string;
 }
 
 interface DBToken {
@@ -188,6 +193,24 @@ const clearTimezone = (id: string): Promise<void> => {
     return setTimezone(id, null);
 };
 
+const addWatcher = (watcher: Watcher): Promise<void> => {
+    const watchers = getCollection(Entity.WATCHERS);
+    return promisifyNeDB<void>(watchers.insert.bind(watchers))(watcher);
+};
+
+const listWatchers = async (): Promise<Watcher[]> => {
+    const query = {};
+    const cursor = getCollection(Entity.WATCHERS).find(query);
+    const documents = await promisifyNeDB<DBWatcher[]>(cursor.exec.bind(cursor))();
+    documents.forEach((watcher) => delete watcher._id);
+    Log.info(`Retrieved ${documents.length} watchers`);
+    return documents;
+};
+const removeWatcher = (watcher: Watcher): Promise<void> => {
+    const watchers = getCollection(Entity.WATCHERS);
+    return promisifyNeDB<void>(watchers.remove.bind(watchers))(watcher);
+};
+
 export const NeDBAdapter: DatabaseAdapter = {
     getSetting,
     setSetting,
@@ -203,4 +226,7 @@ export const NeDBAdapter: DatabaseAdapter = {
     setTimezone,
     getTimezone,
     clearTimezone,
+    addWatcher,
+    removeWatcher,
+    listWatchers,
 };

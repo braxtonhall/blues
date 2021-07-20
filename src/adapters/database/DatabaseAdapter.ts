@@ -1,4 +1,4 @@
-import {Playlist, Range, Setting, Song, Source} from "../../Types";
+import {Playlist, Range, Setting, Song, Source, Watcher} from "../../Types";
 import {NeDBAdapter} from "./impl/NeDBAdapter";
 
 export interface DatabaseAdapter {
@@ -21,6 +21,11 @@ export interface DatabaseAdapter {
     getTimezone(id: string): Promise<string>;
     setTimezone(id: string, timezone: string): Promise<void>;
     clearTimezone(id: string): Promise<void>;
+
+    // watcher
+    addWatcher(watcher: Watcher): Promise<void>;
+    listWatchers(): Promise<Watcher[]>;
+    removeWatcher(watcher: Watcher): Promise<void>;
 
     // tokens
     addToken(token: string): Promise<void>;

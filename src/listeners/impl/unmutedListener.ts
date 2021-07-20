@@ -7,12 +7,12 @@ import {MuteOption} from "../../Types";
 const unmutedListener: Listener<"voiceStateUpdate"> = {
     name: "unmutedListener",
     event: "voiceStateUpdate",
-    procedure: (client: Client) => async (oldVoiceState: VoiceState, newVoiceState: VoiceState) => {
+    procedure: (client: Client) => async (_: VoiceState, newVoiceState: VoiceState) => {
         if (newVoiceState.channel) {
             const guild = newVoiceState.guild.id;
             const {option} = await SettingsController.getMute(guild);
             const bot = await SettingsController.getBot(guild);
-            if (newVoiceState.id === bot && !oldVoiceState.channel) {
+            if (newVoiceState.id === bot) {
                 const futureMutes = newVoiceState.channel.members
                     .filter(shouldMute(bot))
                     .map((member) => strategies[option](client, member.voice));
